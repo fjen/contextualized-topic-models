@@ -98,19 +98,14 @@ class TopicModelDataPreparation:
         :param custom_embeddings: np.ndarray type object to use custom embeddings (optional).
         :param labels: list of labels associated with each document (optional).
         """
-
+        assert text_for_bow is not None
         if custom_embeddings is not None:
-            assert len(text_for_contextual) == len(custom_embeddings)
-
-            if text_for_bow is not None:
-                assert len(custom_embeddings) == len(text_for_bow)
-
+            assert len(custom_embeddings) == len(text_for_bow)
             if type(custom_embeddings).__module__ != "numpy":
                 raise TypeError(
                     "contextualized_embeddings must be a numpy.ndarray type object"
                 )
-
-        if text_for_bow is not None:
+        else:
             assert len(text_for_contextual) == len(text_for_bow)
 
         if self.contextualized_model is None and custom_embeddings is None:
@@ -169,13 +164,10 @@ class TopicModelDataPreparation:
         :param labels: list of labels associated with each document (optional).
         """
 
-        if custom_embeddings is not None:
-            assert len(text_for_contextual) == len(custom_embeddings)
+        if custom_embeddings is not None and text_for_bow is not None:
+            assert len(custom_embeddings) == len(text_for_bow)
 
-            if text_for_bow is not None:
-                assert len(custom_embeddings) == len(text_for_bow)
-
-        if text_for_bow is not None:
+        if text_for_contextual is not None:
             assert len(text_for_contextual) == len(text_for_bow)
 
         if self.contextualized_model is None:
@@ -196,7 +188,7 @@ class TopicModelDataPreparation:
 
             # we just need an object that is matrix-like so that pytorch does not complain
             test_bow_embeddings = scipy.sparse.csr_matrix(
-                np.zeros((len(text_for_contextual), 1))
+                np.zeros((custom_embeddings.shape[0] if custom_embeddings is not None else len(text_for_contextual), 1))
             )
 
         if custom_embeddings is None:
