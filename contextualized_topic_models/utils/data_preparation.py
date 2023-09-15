@@ -170,11 +170,6 @@ class TopicModelDataPreparation:
         if text_for_contextual is not None:
             assert len(text_for_contextual) == len(text_for_bow)
 
-        if self.contextualized_model is None:
-            raise Exception(
-                "You should define a contextualized model if you want to create the embeddings"
-            )
-
         if text_for_bow is not None:
             test_bow_embeddings = self.vectorizer.transform(text_for_bow)
         else:
@@ -192,6 +187,10 @@ class TopicModelDataPreparation:
             )
 
         if custom_embeddings is None:
+            if self.contextualized_model is None:
+                raise Exception(
+                    "You should define a contextualized model if you want to create the embeddings"
+                )
             test_contextualized_embeddings = bert_embeddings_from_list(
                 text_for_contextual,
                 sbert_model_to_load=self.contextualized_model,
